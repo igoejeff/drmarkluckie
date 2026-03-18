@@ -304,33 +304,73 @@ select, input, textarea { font-family: inherit; }
 .hero-slide {
   position: absolute;
   inset: 0;
-  background-size: cover;
-  background-position: center 30%;
   opacity: 0;
-  transform: scale(1);
   transition: opacity 1.6s ease;
   will-change: opacity;
 }
+/* Blurred backdrop fills the dark bars — the main image sits on top unclipped */
+.hero-slide-backdrop {
+  position: absolute;
+  inset: -40px;               /* extra bleed so blurred edges don't show */
+  background-size: cover;
+  background-position: center center;
+  filter: blur(22px) brightness(0.35) saturate(0.6);
+  transform: scale(1.08);     /* prevents blur edge artifacts */
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-slide-img {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;        /* vertically centre the image in the frame */
+  justify-content: center;
+  z-index: 1;
+}
+.hero-slide-img img {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;        /* NEVER crops — full image always visible */
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+/* On wide viewports shift image to the right so text column on the left stays readable */
+@media (min-width: 900px) {
+  .hero-slide-img {
+    justify-content: flex-end;
+    padding-right: clamp(20px, 4vw, 80px);
+  }
+  .hero-slide-img img {
+    width: auto;
+    height: 92%;
+    max-width: 52%;           /* image occupies right half of screen */
+  }
+}
+
 .hero-slide.active {
   opacity: 1;
-  transform: scale(1);
 }
 
 .hero-overlay {
   position: absolute;
   inset: 0;
+  /* Strong dark left panel for text legibility; right side lets image show through */
   background: linear-gradient(
-    100deg,
-    rgba(9,9,9,0.82) 0%,
-    rgba(9,9,9,0.50) 40%,
-    rgba(9,9,9,0.20) 100%
+    105deg,
+    rgba(9,9,9,0.92) 0%,
+    rgba(9,9,9,0.75) 35%,
+    rgba(9,9,9,0.30) 60%,
+    rgba(9,9,9,0.10) 100%
   );
-  z-index: 1;
+  z-index: 2;   /* sits above the backdrop AND the image layer */
+  pointer-events: none;
 }
 
 .hero-content {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   padding-inline: clamp(24px, 6vw, 120px);
   padding-top: calc(var(--nav-h) + 20px);
   padding-bottom: 140px;
@@ -417,7 +457,7 @@ select, input, textarea { font-family: inherit; }
   position: absolute;
   bottom: 120px;
   right: clamp(24px, 5vw, 80px);
-  z-index: 2;
+  z-index: 4;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -442,7 +482,7 @@ select, input, textarea { font-family: inherit; }
 .hero-stats {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  z-index: 3;
+  z-index: 4;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -493,7 +533,7 @@ select, input, textarea { font-family: inherit; }
   bottom: 90px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 3;
+  z-index: 4;
   display: flex;
   gap: 8px;
   align-items: center;
